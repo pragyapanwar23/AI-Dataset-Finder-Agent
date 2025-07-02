@@ -19,10 +19,7 @@ if st.button("Search for Datasets"):
         st.success("✅ Done! (placeholder)")
         st.markdown(result)
 
-import streamlit as st
-from main import handle_query  # This will do nothing for now
 
-st.set_page_config(page_title="AI Dataset Finder", layout="centered")
 
 
 
