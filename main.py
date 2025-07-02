@@ -2,7 +2,6 @@
 from query_parser import generate_search_query
 from dataset_finder import search_kaggle_datasets
 
-
 def handle_query(prompt):
     query = generate_search_query(prompt)
     results = search_kaggle_datasets(query)
