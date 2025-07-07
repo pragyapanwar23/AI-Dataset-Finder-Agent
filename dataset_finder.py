@@ -1,8 +1,7 @@
+# dataset_finder.py
 
 from kaggle.api.kaggle_api_extended import KaggleApi
 from query_parser import generate_search_query as generate_query
-
-
 
 def search_kaggle_datasets(user_prompt, max_results=5):
     api = KaggleApi()
@@ -14,10 +13,9 @@ def search_kaggle_datasets(user_prompt, max_results=5):
     datasets = []
     for dataset in results:
         datasets.append({
-    "title": dataset.title,
-    "ref": dataset.ref,
-    "url": f"https://www.kaggle.com/datasets/{dataset.ref}",
-    "description": dataset.subtitle
-    # "size": dataset.totalBytes  # Optional: uncomment if you want size in bytes
- })
+            "title": dataset.title,
+            "ref": dataset.ref,
+            "url": f"https://www.kaggle.com/datasets/{dataset.ref}",
+            "description": dataset.subtitle
+        })
     return datasets

@@ -1,19 +1,25 @@
+# main.py
 
-from query_parser import generate_search_query
-from dataset_finder import search_kaggle_datasets
+from memory.memory_store import check_memory, save_to_memory
 
-def handle_query(prompt):
-    query = generate_search_query(prompt)
-    results = search_kaggle_datasets(query)
+def run_dataset_agent(prompt):
+    from agents.intent_agent import extract_intent
+    from agents.search_agent import search_all_sources
+    from agents.evaluate_agent import rank_datasets
+    from agents.report_agent import generate_report
 
-    if not results:
-        return "❌ No relevant datasets found. Try a simpler or broader query."
+    cached = check_memory(prompt)
+    if cached:
+        return f"⚡️ Using memory (cached)\n\n{cached[0]}"
+
+    intent = extract_intent(prompt)
     
-    # Convert each dataset dictionary to a readable string
-    formatted_results = [
-        f"📂 **{d['title']}**\n🔗 [Link]({d['url']})\n📝 {d.get('description', 'No description available')}"
-        for d in results
-    ]
-    
-    return "\n\n---\n\n".join(formatted_results)
+    # ✅ Add this line to inspect what was extracted
+    print(f"[Intent] Extracted: {intent}")  # 👈 Add this for debugging
 
+    raw_results = search_all_sources(intent)
+    top_datasets = rank_datasets(prompt, raw_results)
+    report = generate_report(top_datasets)
+
+    save_to_memory(prompt, report)
+    return report

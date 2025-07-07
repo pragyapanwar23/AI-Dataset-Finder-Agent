@@ -1,26 +1,12 @@
+# app.py
+
 import streamlit as st
-from main import handle_query  # This will do nothing for now
+from main import run_dataset_agent
 
-st.set_page_config(page_title="AI Dataset Finder", layout="centered")
+st.title("🔎 AI Dataset Finder")
+user_input = st.text_input("Describe the dataset you need:")
 
-st.title("🔍 AI Dataset Finder")
-st.markdown("Describe your research or project goal, and I'll help you find relevant datasets!")
-
-# Text input from user
-user_input = st.text_area("What kind of dataset are you looking for?", height=150)
-
-# Button to trigger the search
-if st.button("Search for Datasets"):
-    if not user_input.strip():
-        st.warning("Please enter a description of your dataset needs.")
-    else:
-        st.info("🔄 Searching for relevant datasets...")
-        result = handle_query(user_input)
-        st.success("✅ Done! (placeholder)")
-        st.markdown(result)
-
-
-
-
-
-
+if st.button("Search") and user_input:
+    with st.spinner("Finding best datasets..."):
+        results = run_dataset_agent(user_input)
+        st.markdown(results, unsafe_allow_html=True)  # <- Enable HTML styling

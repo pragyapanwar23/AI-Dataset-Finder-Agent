@@ -1,17 +1,30 @@
 # query_parser.py
 
-import spacy
+import openai
+import os
+from dotenv import load_dotenv
 
-nlp = spacy.load("en_core_web_sm")
+# Load environment variables from .env
+load_dotenv()
 
-def extract_keywords(prompt):
-    doc = nlp(prompt.lower())
-    keywords = [chunk.text.strip() for chunk in doc.noun_chunks if len(chunk.text.strip()) > 2]
-    return keywords
+# Initialize OpenAI client
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def build_search_query(keywords):
-    return " ".join(keywords)
+def generate_search_query(prompt):
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",  # Or "gpt-4o" if you have access
+        messages=[
+            {
+                "role": "system",
+                "content": "Extract dataset search keywords and metadata from user input. Return a plain search query string."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.2,
+    )
 
-def generate_search_query(prompt):  # <- This function MUST be present!
-    keywords = extract_keywords(prompt)
-    return build_search_query(keywords)
+    content = response.choices[0].message.content.strip()
+    return content
