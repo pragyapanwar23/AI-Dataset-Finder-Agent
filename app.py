@@ -1,13 +1,6 @@
 # app.py
 
-# Patch sqlite3 with modern version to satisfy chromadb
-import sys
-import importlib
-import pysqlite3
-
-sys.modules["sqlite3"] = pysqlite3
-importlib.reload(pysqlite3)
-
+import boot  # <-- Must be before ANYTHING else
 import streamlit as st
 from main import run_dataset_agent
 
