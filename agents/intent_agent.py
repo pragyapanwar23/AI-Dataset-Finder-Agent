@@ -1,36 +1,46 @@
 import os
 import openai
-import json
 import spacy
-import en_core_web_sm
+import json
 from dotenv import load_dotenv
 
-# --- Load spaCy model ---
-nlp = en_core_web_sm.load()
-
-# --- Load environment and OpenAI client ---
+# --- Load .env for local, fallback to Streamlit secrets/environment ---
 load_dotenv()
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+if not openai.api_key:
+    raise RuntimeError("❌ OPENAI_API_KEY not found. Set it in .env or Streamlit Secrets.")
+
+# --- Robust spaCy model loader ---
+import spacy.cli
+model_name = "en_core_web_sm"
+try:
+    nlp = spacy.load(model_name)
+except OSError:
+    print(f"📦 Downloading spaCy model '{model_name}'...")
+    spacy.cli.download(model_name)
+    nlp = spacy.load(model_name)
+# ----------------------------------------------------------------------
 
 def extract_intent(prompt):
     try:
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "Extract domain, task, data_type and keywords from user queries. Reply with JSON only."},
                 {"role": "user", "content": prompt}
             ]
         )
-        content = response.choices[0].message.content
+        content = response['choices'][0]['message']['content']
         return json.loads(content)
 
-    except openai.RateLimitError:
+    except openai.error.RateLimitError:
         print("⚠️ API quota exceeded. Using fallback intent extraction.")
         spacy_result = fallback_intent_parser(prompt)
         spacy_result["notice"] = "⚠️ OpenAI quota exceeded. Using spaCy fallback."
         return spacy_result
 
-    except openai.AuthenticationError:
+    except openai.error.AuthenticationError:
         return {
             "domain": None,
             "task": None,
