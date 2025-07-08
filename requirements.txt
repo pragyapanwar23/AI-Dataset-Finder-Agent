@@ -12,3 +12,4 @@ protobuf>=3.19.0,<4.0.0
 fastapi
 uvicorn
 pysqlite3-binary
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
