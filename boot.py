@@ -7,3 +7,4 @@ import pysqlite3
 # Forcefully patch sqlite3 to use pysqlite3
 sys.modules["sqlite3"] = pysqlite3
 importlib.reload(pysqlite3)
+print("✅ Patched sqlite3 with pysqlite3")
