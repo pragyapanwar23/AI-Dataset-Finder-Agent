@@ -12,11 +12,6 @@ def authenticate_kaggle():
             os.environ["KAGGLE_KEY"] = st.secrets["KAGGLE_KEY"]
         except Exception as e:
             raise RuntimeError("❌ Kaggle credentials missing and Streamlit secrets unavailable.") from e
-def search_kaggle(intent_dict, max_results=20):
-    keywords = intent_dict.get("keywords", [])
-    if isinstance(keywords, str):
-        keywords = [keywords]
-    query = " ".join(keywords)
 
     api = KaggleApi()
     api.authenticate()
@@ -42,11 +37,6 @@ def search_kaggle(intent_dict, max_results=20):
         subtitle = getattr(r, "subtitle", "")
         combined_text = f"{title} {subtitle}"
         score = keyword_match_score(combined_text, query_keywords)
-        full_text = f"{title} {subtitle}".lower()
-
-        # Simple keyword match score
-        match_count = sum(1 for kw in keywords if kw.lower() in full_text)
-        score = match_count / len(keywords) if keywords else 0
 
         datasets.append({
             "title": title,
