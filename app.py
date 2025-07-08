@@ -4,7 +4,7 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 
 from agents.report_agent import generate_report
 from utils.kaggle_utils import authenticate_kaggle
-from utils.rank_utils import rank_datasets  # <-- make sure it's in a module
+from agents.evaluate_agent import rank_datasets
 
 # Load Kaggle credentials
 os.environ["KAGGLE_USERNAME"] = st.secrets["KAGGLE_USERNAME"]
