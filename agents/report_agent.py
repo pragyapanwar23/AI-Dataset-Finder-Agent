@@ -12,7 +12,10 @@ def generate_report(datasets):
         score = f"{d['score']:.2f}" if "score" in d else "N/A"
 
         report.append(
-            f"""**{idx}. {title}** [🔗](<{url}>) <span style='color:#1f77b4;'>⭐ Relevance Score: {score}</span>\n\n{desc}\n"""
+            f"""**{idx}. {title}**  
+🔗 {url}  
+⭐ Relevance Score: {score}  
+_{desc}_\n"""
         )
 
-    return "\n".join(report)
+    return "\n---\n".join(report)
