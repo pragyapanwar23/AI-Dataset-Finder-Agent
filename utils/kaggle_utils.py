@@ -1,10 +1,10 @@
 # utils/kaggle_utils.py
 
 import os
+import re
 from kaggle.api.kaggle_api_extended import KaggleApi
 
 def authenticate_kaggle():
-    # Try setting from Streamlit secrets if not already set
     if "KAGGLE_USERNAME" not in os.environ or "KAGGLE_KEY" not in os.environ:
         try:
             import streamlit as st
@@ -17,24 +17,35 @@ def authenticate_kaggle():
     api.authenticate()
     return api
 
+def keyword_match_score(text, keywords):
+    if not text or not keywords:
+        return 0
+    text = text.lower()
+    score = sum(1 for kw in keywords if kw.lower() in text)
+    return score / len(keywords)
+
 def search_kaggle(intent_dict, max_results=20):
-    query = intent_dict.get("keywords", "")
-    if isinstance(query, list):
-        query = " ".join(query)
-    elif not isinstance(query, str):
-        query = str(query)
+    query_keywords = intent_dict.get("keywords", [])
+    query = " ".join(query_keywords) if isinstance(query_keywords, list) else str(query_keywords)
 
     api = authenticate_kaggle()
-
     kaggle_results = api.dataset_list(search=query)
 
     datasets = []
     for r in kaggle_results[:max_results]:
+        title = getattr(r, "title", "")
+        subtitle = getattr(r, "subtitle", "")
+        combined_text = f"{title} {subtitle}"
+        score = keyword_match_score(combined_text, query_keywords)
+
         datasets.append({
-            "title": getattr(r, "title", ""),
-            "description": getattr(r, "subtitle", ""),
+            "title": title,
+            "description": subtitle,
             "url": f"https://www.kaggle.com/datasets/{getattr(r, 'ref', '')}",
-            "ref": getattr(r, "ref", "")
+            "ref": getattr(r, "ref", ""),
+            "score": score
         })
 
+    # Sort by score descending
+    datasets.sort(key=lambda x: x["score"], reverse=True)
     return datasets
