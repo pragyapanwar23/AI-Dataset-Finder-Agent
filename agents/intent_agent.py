@@ -1,24 +1,15 @@
 import os
 import openai
-import spacy
-import subprocess
-import importlib.util
 import json
+import spacy
+import en_core_web_sm
 from dotenv import load_dotenv
 
-# --- Robust model loader ---
-import spacy.cli
+# --- Load spaCy model ---
+nlp = en_core_web_sm.load()
 
-model_name = "en_core_web_sm"
-try:
-    nlp = spacy.load(model_name)
-except OSError:
-    spacy.cli.download(model_name)
-    nlp = spacy.load(model_name)
-# ---------------------------
-
+# --- Load environment and OpenAI client ---
 load_dotenv()
-
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def extract_intent(prompt):
