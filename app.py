@@ -1,12 +1,7 @@
 # app.py
 
 import os
-import sys
 import streamlit as st
-from kaggle.api.kaggle_api_extended import KaggleApi
-
-# Use current working directory instead of __file__ for cloud compatibility
-sys.path.append(os.getcwd())
 
 from agents.report_agent import generate_report
 from agents.evaluate_agent import rank_datasets
@@ -19,16 +14,13 @@ os.environ["KAGGLE_KEY"] = st.secrets["KAGGLE_KEY"]
 # Authenticate Kaggle API
 api = authenticate_kaggle()
 
-# Streamlit UI
 st.title("🔎 AI Dataset Finder")
 
 query = st.text_input("Describe the dataset you need:", "")
 
 if query:
-    # Search datasets
     raw_results = api.dataset_list(search=query)
 
-    # Convert to plain dict
     datasets = []
     for d in raw_results:
         datasets.append({
@@ -38,7 +30,6 @@ if query:
             "ref": getattr(d, "ref", "")
         })
 
-    # Rank and display
     ranked = rank_datasets(query, datasets)
 
     if ranked:
