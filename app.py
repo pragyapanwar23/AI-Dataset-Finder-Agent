@@ -2,16 +2,15 @@
 
 import os
 import sys
-
-# Add the current directory to Python path to allow relative imports
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 import streamlit as st
 from kaggle.api.kaggle_api_extended import KaggleApi
 
+# Use current working directory instead of __file__ for cloud compatibility
+sys.path.append(os.getcwd())
+
 from agents.report_agent import generate_report
-from utils.kaggle_utils import authenticate_kaggle
 from agents.evaluate_agent import rank_datasets
+from utils.kaggle_utils import authenticate_kaggle
 
 # Load Kaggle credentials from Streamlit secrets
 os.environ["KAGGLE_USERNAME"] = st.secrets["KAGGLE_USERNAME"]
@@ -29,7 +28,7 @@ if query:
     # Search datasets
     raw_results = api.dataset_list(search=query)
 
-    # Convert Kaggle dataset metadata to dicts
+    # Convert to plain dict
     datasets = []
     for d in raw_results:
         datasets.append({
@@ -39,10 +38,9 @@ if query:
             "ref": getattr(d, "ref", "")
         })
 
-    # Rank using sentence-transformers
+    # Rank and display
     ranked = rank_datasets(query, datasets)
 
-    # Display results
     if ranked:
         st.markdown(generate_report(ranked), unsafe_allow_html=True)
     else:
