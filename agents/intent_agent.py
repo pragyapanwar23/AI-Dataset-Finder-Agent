@@ -7,11 +7,14 @@ import json
 from dotenv import load_dotenv
 
 # --- Robust model loader ---
-model_name = "en_core_web_sm"
-if importlib.util.find_spec(model_name) is None:
-    subprocess.run(["python", "-m", "spacy", "download", model_name])
+import spacy.cli
 
-nlp = spacy.load(model_name)
+model_name = "en_core_web_sm"
+try:
+    nlp = spacy.load(model_name)
+except OSError:
+    spacy.cli.download(model_name)
+    nlp = spacy.load(model_name)
 # ---------------------------
 
 load_dotenv()
