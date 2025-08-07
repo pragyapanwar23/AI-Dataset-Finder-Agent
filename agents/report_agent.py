@@ -14,7 +14,7 @@ def generate_report(datasets):
         report.append(
             f"""**{idx}. {title}**  
 🔗 {url}  
-⭐ Relevance Score: {score}  
+Relevance Score: {score}  
 _{desc}_\n"""
         )
 
