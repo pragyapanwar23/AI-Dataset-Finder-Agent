@@ -11,7 +11,7 @@ os.environ["KAGGLE_KEY"] = st.secrets["KAGGLE_KEY"]
 
 api = authenticate_kaggle()
 
-st.title("🔎 AI Dataset Finder")
+st.title("AI Dataset Finder")
 query = st.text_input("Describe the dataset you need:", "")
 
 if query:
